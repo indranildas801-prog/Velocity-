@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Settings as SettingsIcon, Globe, Zap, Database, Shield, Info } from 'lucide-react';
+import Logo from './Logo';
 import { ChatMode, Language } from '../lib/gemini';
 import { cn } from '../lib/utils';
 
@@ -9,9 +10,11 @@ interface SettingsProps {
   setMode: (mode: ChatMode) => void;
   language: Language;
   setLanguage: (lang: Language) => void;
+  deferredPrompt: any;
+  setDeferredPrompt: (prompt: any) => void;
 }
 
-export default function Settings({ mode, setMode, language, setLanguage }: SettingsProps) {
+export default function Settings({ mode, setMode, language, setLanguage, deferredPrompt, setDeferredPrompt }: SettingsProps) {
   const languages: { code: Language; label: string }[] = [
     { code: 'bn', label: 'Bengali (বাংলা)' },
     { code: 'en', label: 'English' },
@@ -26,6 +29,15 @@ export default function Settings({ mode, setMode, language, setLanguage }: Setti
     { id: 'creative', label: 'Creative', desc: 'Imaginative and expressive tone' },
     { id: 'passionate', label: 'Passionate', desc: 'High energy and emotional engagement' },
   ];
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-8 pb-20">
@@ -123,6 +135,26 @@ export default function Settings({ mode, setMode, language, setLanguage }: Setti
             </div>
             <div className="text-xs font-mono text-neon-red">READY</div>
           </div>
+
+          {deferredPrompt && (
+            <div className="flex items-center justify-between p-4 bg-neon-blue/10 rounded-xl border border-neon-blue/20">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-neon-blue/20 flex items-center justify-center text-neon-blue">
+                  <Logo size="sm" />
+                </div>
+                <div>
+                  <div className="font-bold text-neon-blue">Install Velocity AI</div>
+                  <div className="text-[10px] text-white/40 uppercase tracking-widest">Add to home screen</div>
+                </div>
+              </div>
+              <button 
+                onClick={handleInstall}
+                className="px-4 py-2 bg-neon-blue text-black text-xs font-bold rounded-lg hover:scale-105 transition-transform"
+              >
+                INSTALL
+              </button>
+            </div>
+          )}
           
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

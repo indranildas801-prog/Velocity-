@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Brain, Trophy, ArrowRight, RefreshCcw, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateQuiz, Language } from '../lib/gemini';
+import { cn } from '../lib/utils';
 
 interface Question {
   question: string;

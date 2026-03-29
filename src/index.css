@@ -49,6 +49,19 @@ body {
     linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
   background-size: 100% 100%, 40px 40px, 40px 40px;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Prevent text selection on UI elements */
+button, nav, header, aside {
+  user-select: none;
+}
+
+/* Allow selection in chat and inputs */
+.chat-message, input, textarea {
+  user-select: text;
 }
 
 /* Scanline Overlay */

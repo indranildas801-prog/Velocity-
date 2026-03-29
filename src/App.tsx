@@ -37,8 +37,26 @@ export default function App() {
   const [language, setLanguage] = useState<Language>('bn');
   const [isListening, setIsListening] = useState(false);
   const [location, setLocation] = useState<string | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('SW registered: ', registration);
+        }).catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+      });
+    }
+
+    // Handle PWA install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+
     // Request location on mount
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -185,7 +203,7 @@ export default function App() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-neon-blue/5 blur-[120px] rounded-full -z-10" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-neon-red/5 blur-[100px] rounded-full -z-10" />
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="flex-1 overflow-y-auto custom-scrollbar pb-20 lg:pb-0">
           <AnimatePresence mode="wait">
             {currentPage === 'home' && (
               <motion.div
@@ -278,11 +296,30 @@ export default function App() {
                 setMode={setMode} 
                 language={language} 
                 setLanguage={setLanguage} 
+                deferredPrompt={deferredPrompt}
+                setDeferredPrompt={setDeferredPrompt}
               />
             )}
             {currentPage === 'about' && <About key="about" />}
           </AnimatePresence>
         </div>
+
+        {/* Bottom Navigation - Mobile */}
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 glass-panel border-t border-white/5 flex items-center justify-around px-2 z-40 pb-safe">
+          {menuItems.slice(0, 5).map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setCurrentPage(item.id as Page)}
+              className={cn(
+                "flex flex-col items-center justify-center gap-1 transition-all",
+                currentPage === item.id ? "text-neon-blue" : "text-white/40"
+              )}
+            >
+              <item.icon size={20} />
+              <span className="text-[10px] font-bold uppercase tracking-tighter">{item.label}</span>
+            </button>
+          ))}
+        </nav>
 
         {/* Global Voice Button */}
         <div className="fixed bottom-6 right-6 z-50">
