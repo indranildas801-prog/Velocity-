@@ -1,0 +1,9 @@
+{
+  "name": "Velocity AI",
+  "description": "A futuristic Jarvis-inspired AI assistant with voice interaction, image generation, and productivity tools.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
